@@ -1,0 +1,12 @@
+img {
+  border-radius: 5px;
+}
+#paragraph {
+  font-family: cursive;
+  font-weight: lighter;
+}
+
+#main-name {
+  font-size: 60px;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+}

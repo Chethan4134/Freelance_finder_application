@@ -1,0 +1,11 @@
+#header-text {
+  font-size: 70px;
+  font-family: "Times New Roman", Times, serif;
+  font-weight: bolder;
+}
+
+.contact-background {
+  background-color: #dee1e6;
+  padding: 50px 0;
+  height: 93vh;
+}
