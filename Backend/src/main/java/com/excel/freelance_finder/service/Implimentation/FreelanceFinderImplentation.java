@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.excel.freelance_finder.Repository.ApplicationRepository;
@@ -28,20 +28,21 @@ import com.excel.freelance_finder.listdto.JobPostingList;
 import com.excel.freelance_finder.service.FreelanceFinderService;
 import com.excel.freelance_finder.util.FreelancerUtils;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class FreelanceFinderImplentation implements FreelanceFinderService {
 
-	@Autowired
-	private ClientRepository clientRepository;
+	private final ClientRepository clientRepository;
 
-	@Autowired
-	private FreelancerRepository freelancerRepository;
+	private final FreelancerRepository freelancerRepository;
 
-	@Autowired
-	private JobPostingRepository postingRepository;
+	private final JobPostingRepository postingRepository;
 
-	@Autowired
-	private ApplicationRepository applicationRepository;
+	private final ApplicationRepository applicationRepository;
+
+	private final PasswordEncoder bCryptPasswordEncoder;
 
 //-------------------------------------------------------------------------------------------------------------	
 	@Override
@@ -49,6 +50,7 @@ public class FreelanceFinderImplentation implements FreelanceFinderService {
 		Optional<ClientUser> optional = clientRepository.findByClientEmail(dto.getClientEmail());
 		if (optional.isEmpty()) {
 			ClientUser clientUser = FreelancerUtils.dtoToClientUser(dto);
+			clientUser.setPassword(bCryptPasswordEncoder.encode(dto.getPassword()));
 			ClientUser user = clientRepository.save(clientUser);
 			return user.getClientEmail();
 		}
@@ -62,6 +64,7 @@ public class FreelanceFinderImplentation implements FreelanceFinderService {
 		Optional<Freelancer> optional = freelancerRepository.findByFreelancerEmail(dto.getFreelancerEmail());
 		if (optional.isEmpty()) {
 			Freelancer freelancer = FreelancerUtils.dtoToFreelancer(dto);
+			freelancer.setPassword(bCryptPasswordEncoder.encode(dto.getPassword()));
 			Freelancer freelancerUser = freelancerRepository.save(freelancer);
 			return freelancerUser.getFreelancerEmail();
 		}
@@ -89,14 +92,12 @@ public class FreelanceFinderImplentation implements FreelanceFinderService {
 
 	@Override
 	public String jobApplication(JobApplicationDto dto) {
-//		Optional<JobApplication> optionalApplication = applicationRepository
-//				.findByFreelancerFreelancerEmail(dto.getFreelancerEmail());
-//		if (optionalApplication.isPresent())
-//			throw new FreelanceException(FreelancerConstant.FREELANCER_ALREADY_APLLIED);
-	Optional<JobApplication> optional = applicationRepository
-			.findByFreelancerFreelancerEmailAndJobPostingJobId(dto.getFreelancerEmail(),dto.getJobId());
+
+		Optional<JobApplication> optional = applicationRepository
+				.findByFreelancerFreelancerEmailAndJobPostingJobId(dto.getFreelancerEmail(), dto.getJobId());
 		if (!optional.isPresent()) {
-			Optional<Freelancer> freelancerOptional = freelancerRepository.findByFreelancerEmail(dto.getFreelancerEmail());
+			Optional<Freelancer> freelancerOptional = freelancerRepository
+					.findByFreelancerEmail(dto.getFreelancerEmail());
 			Optional<JobPosting> jobOptional = postingRepository.findByJobId(dto.getJobId());
 			if (freelancerOptional.isPresent() && jobOptional.isPresent()) {
 				Freelancer freelancer = freelancerOptional.get();
@@ -123,7 +124,7 @@ public class FreelanceFinderImplentation implements FreelanceFinderService {
 			throw new FreelanceException(FreelancerConstant.FREELANCER_ID_IS_NOT_EXIST);
 		}
 		throw new FreelanceException(FreelancerConstant.FREELANCER_ALREADY_APLLIED);
-		
+
 	}
 
 //-----------------------------------------------------------------------------------------------------------------
@@ -155,8 +156,6 @@ public class FreelanceFinderImplentation implements FreelanceFinderService {
 		throw new FreelanceException(FreelancerConstant.FREELANCER_ID_IS_NOT_EXIST);
 
 	}
-//--------------------------------------------------------------------------------------------------------------------
-
 //-----------------------------------------------------------------------------------------------------------------------	
 
 	@Override
@@ -165,7 +164,7 @@ public class FreelanceFinderImplentation implements FreelanceFinderService {
 		if (optional.isPresent()) {
 			ClientUser clientUser = optional.get();
 			return clientUser.getJobPosting().stream()
-					.map(e -> JobPostingDto.builder().titel(e.getTitel())
+					.map(e -> JobPostingDto.builder().title(e.getTitle())
 							.clientEmail(e.getClientUser().getClientEmail()).jobId(e.getJobId())
 							.description(e.getDescription()).budget(e.getBudget()).postingAt(e.getPostingAt())
 							.skillsRequired(e.getSkillsRequired()).build())
@@ -181,7 +180,7 @@ public class FreelanceFinderImplentation implements FreelanceFinderService {
 		if (optional.isPresent()) {
 			Freelancer freelancer = optional.get();
 			return freelancer.getJobAppliers().stream()
-					.map(e -> JobPostingDto.builder().titel(e.getJobPosting().getTitel())
+					.map(e -> JobPostingDto.builder().title(e.getJobPosting().getTitle())
 							.jobId(e.getJobPosting().getJobId()).description(e.getJobPosting().getDescription())
 							.budget(e.getJobPosting().getBudget()).postingAt(e.getJobPosting().getPostingAt())
 							.skillsRequired(e.getJobPosting().getSkillsRequired()).build())
@@ -245,24 +244,19 @@ public class FreelanceFinderImplentation implements FreelanceFinderService {
 //-----------------------------------------------------------------------------------------------------------------------------
 
 	@Override
-	public ClientDto loginSignIn(ClientDto dto) {
+	public ClientDto clientLogin(ClientDto dto) {
 		Optional<ClientUser> email = clientRepository.findByClientEmail(dto.getClientEmail());
 		if (email.isPresent()) {
 			ClientUser clientUser = email.get();
-			if (clientUser.getPassword().equals(dto.getPassword())) {
-				return ClientDto.builder()
-						.firstName(clientUser.getFirstName())
-						.clientEmail(clientUser.getClientEmail())
-						.response(true)
-						.build();
+			if (bCryptPasswordEncoder.matches(dto.getPassword(), clientUser.getPassword())) {
+				return ClientDto.builder().firstName(clientUser.getFirstName()).clientEmail(clientUser.getClientEmail())
+						.response(true).build();
 			} else {
-				return ClientDto.builder()
-						.response(false)
-						.build();
+				return ClientDto.builder().response(false).build();
 			}
 		}
-		 throw new FreelanceException(FreelancerConstant.ID_IS_NOT_EXIST);
-		
+		throw new FreelanceException(FreelancerConstant.ID_IS_NOT_EXIST);
+
 	}
 //-----------------------------------------------------------------------------------------------------------------------------
 
@@ -271,16 +265,11 @@ public class FreelanceFinderImplentation implements FreelanceFinderService {
 		Optional<Freelancer> loginFreelance = freelancerRepository.findByFreelancerEmail(dto.getFreelancerEmail());
 		if (loginFreelance.isPresent()) {
 			Freelancer freelancer = loginFreelance.get();
-			if (freelancer.getPassword().equals(dto.getPassword())) {
-				return FreelancerDto.builder()
-						.firstName(freelancer.getFirstName())
-						.freelancerEmail(freelancer.getFreelancerEmail())
-						.response(true)
-						.build();
+			if (bCryptPasswordEncoder.matches(dto.getPassword(), freelancer.getPassword())) {
+				return FreelancerDto.builder().firstName(freelancer.getFirstName())
+						.freelancerEmail(freelancer.getFreelancerEmail()).response(true).build();
 			} else {
-				return FreelancerDto.builder()
-						.response(false)
-						.build();
+				return FreelancerDto.builder().response(false).build();
 			}
 		}
 		throw new FreelanceException(FreelancerConstant.FREELANCER_ID_IS_NOT_EXIST);
@@ -291,20 +280,9 @@ public class FreelanceFinderImplentation implements FreelanceFinderService {
 	public List<JobPostingDto> getAllJobPosting() {
 
 		return postingRepository.findAll().stream()
-				.map(e -> JobPostingDto.builder().clientEmail(e
-						.getClientUser()
-						.getClientEmail())
-						.jobId(e.getJobId())
-						.titel(e.getTitel())
-						.description(e
-								.getDescription())
-								.skillsRequired(e
-										.getSkillsRequired())
-						.budget(e
-								.getBudget())
-						.postingAt(e
-								.getPostingAt())
-						.build())
+				.map(e -> JobPostingDto.builder().clientEmail(e.getClientUser().getClientEmail()).jobId(e.getJobId())
+						.title(e.getTitle()).description(e.getDescription()).skillsRequired(e.getSkillsRequired())
+						.budget(e.getBudget()).postingAt(e.getPostingAt()).build())
 				.collect(Collectors.toList());
 	}
 //------------------------------------------------------------------------------------------------------------------------------------
@@ -325,6 +303,7 @@ public class FreelanceFinderImplentation implements FreelanceFinderService {
 
 	}
 
+//----------------------------------------------------------------------------------------------------------------------------------------
 	@Override
 	public String jobApplicationStatus(JobApplicationDto dto) {
 		Optional<JobApplication> optional = applicationRepository
@@ -341,13 +320,11 @@ public class FreelanceFinderImplentation implements FreelanceFinderService {
 
 	@Override
 	public List<JobPostingDto> getJobPostingByTitle(String titel) {
-		List<JobPostingDto> getting = postingRepository.findAll()
-				.stream().map(FreelancerUtils::JobPostingToDto)
-				.sorted(Comparator.comparing(JobPostingDto::getPostingAt)
-				.reversed()).collect(Collectors.toList());
+		List<JobPostingDto> getting = postingRepository.findAll().stream().map(FreelancerUtils::JobPostingToDto)
+				.sorted(Comparator.comparing(JobPostingDto::getPostingAt).reversed()).collect(Collectors.toList());
 
 		if (titel != null) {
-			return getting.stream().filter(b -> b.getTitel().toLowerCase().contains(titel.toLowerCase()))
+			return getting.stream().filter(b -> b.getTitle().toLowerCase().contains(titel.toLowerCase()))
 					.collect(Collectors.toList());
 		} else
 			return getting;

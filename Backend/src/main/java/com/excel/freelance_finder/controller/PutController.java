@@ -1,6 +1,7 @@
 package com.excel.freelance_finder.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import static com.excel.freelance_finder.constant.FreelancerConstant.JOB_APPLICATION_STATUS;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,16 +15,16 @@ import com.excel.freelance_finder.dto.FreelancerDto;
 import com.excel.freelance_finder.dto.JobApplicationDto;
 import com.excel.freelance_finder.responce.CommonResponce;
 import com.excel.freelance_finder.service.FreelanceFinderService;
-import static com.excel.freelance_finder.constant.FreelancerConstant.JOB_APPLICATION_STATUS;
+
+import lombok.RequiredArgsConstructor;
 
 
 @RestController
 @CrossOrigin
+@RequiredArgsConstructor
 public class PutController {
 
-	
-	@Autowired
-	private FreelanceFinderService finderService;
+	private final FreelanceFinderService finderService;
 
 	@DeleteMapping("/deleteClient")
 	public ResponseEntity<String> deleteClientRecord(@RequestBody ClientDto dto) {

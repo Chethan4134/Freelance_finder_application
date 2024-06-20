@@ -17,7 +17,7 @@ public class JobPostingDto {
 
 	private String clientEmail;
 	private String jobId;
-	private String titel;
+	private String title;
 	private String description;
 	private String skillsRequired;
 	private String budget;
