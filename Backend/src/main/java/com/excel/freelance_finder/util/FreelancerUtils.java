@@ -17,12 +17,13 @@ public class FreelancerUtils {
 	public static ClientUser dtoToClientUser(ClientDto dto) {
 		return ClientUser.builder().firstName(dto.getFirstName()).lastName(dto.getLastName()).phone(dto.getPhone())
 				.clientEmail(dto.getClientEmail()).gender(dto.getGender()).dateOfBirth(dto.getDateOfBirth())
-				.password(dto.getPassword()).build();
+				.password(dto.getPassword())
+				.build();
 	}
 
 	public static List<JobPosting> dtoToJobPosting(List<JobPostingDto> dto) {
 		return dto.stream()
-				.map(e -> JobPosting.builder().jobId(e.getJobId()).titel(e.getTitel()).description(e.getDescription())
+				.map(e -> JobPosting.builder().jobId(e.getJobId()).title(e.getTitle()).description(e.getDescription())
 						.skillsRequired(e.getSkillsRequired()).budget(e.getBudget()).postingAt(e.getPostingAt())
 
 						.build())
@@ -32,7 +33,8 @@ public class FreelancerUtils {
 	public static Freelancer dtoToFreelancer(FreelancerDto dto) {
 		return Freelancer.builder().firstName(dto.getFirstName()).lastName(dto.getLastName()).phone(dto.getPhone())
 				.freelancerEmail(dto.getFreelancerEmail()).gender(dto.getGender()).dateOfBirth(dto.getDateOfBirth())
-				.password(dto.getPassword()).build();
+				.password(dto.getPassword())
+				.build();
 	}
 
 	public static JobApplication dtoToJobApplication(JobApplicationDto dto) {
@@ -56,7 +58,7 @@ public class FreelancerUtils {
 
 	public static JobPostingDto JobPostingToDto(JobPosting jobPosting) {
 		return JobPostingDto.builder().clientEmail(jobPosting.getClientUser().getClientEmail())
-				.jobId(jobPosting.getJobId()).titel(jobPosting.getTitel()).description(jobPosting.getDescription())
+				.jobId(jobPosting.getJobId()).title(jobPosting.getTitle()).description(jobPosting.getDescription())
 				.skillsRequired(jobPosting.getSkillsRequired()).build();
 	}
 

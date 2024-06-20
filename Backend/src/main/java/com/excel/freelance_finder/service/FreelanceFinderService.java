@@ -36,7 +36,7 @@ public interface FreelanceFinderService {
 
 	void updateFreelancerInfo(FreelancerDto dto);
 
-	ClientDto loginSignIn(ClientDto dto);
+	ClientDto clientLogin(ClientDto dto);
 
 	FreelancerDto freelancerLogin(FreelancerDto dto);
 

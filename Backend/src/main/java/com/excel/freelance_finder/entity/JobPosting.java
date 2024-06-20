@@ -3,7 +3,6 @@ package com.excel.freelance_finder.entity;
 import java.time.LocalDate;
 import java.util.List;
 
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,7 +32,7 @@ public class JobPosting {
 	
 	@Column(unique = true)
 	private String jobId;
-	private String titel;
+	private String title;
 	private String description;
 	private String skillsRequired;
 	private String budget;
@@ -43,7 +42,6 @@ public class JobPosting {
 	
 	@ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
 	private ClientUser clientUser;
-	
 	
 	@OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "jobPosting")
 	private List<JobApplication> applications;

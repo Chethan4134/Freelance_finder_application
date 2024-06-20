@@ -1,12 +1,17 @@
 package com.excel.freelance_finder.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import static com.excel.freelance_finder.constant.FreelancerConstant.CLIENT_JOB_POSTING;
+import static com.excel.freelance_finder.constant.FreelancerConstant.CLIENT_LOGIN_SUCCESSFULLY;
+import static com.excel.freelance_finder.constant.FreelancerConstant.CLIENT_REGISTRATION_SUCCESSFULLY;
+import static com.excel.freelance_finder.constant.FreelancerConstant.FREELANCER_JOB_APPLICATION;
+import static com.excel.freelance_finder.constant.FreelancerConstant.FREELANCER_LOGIN_SUCCESSFULLY;
+import static com.excel.freelance_finder.constant.FreelancerConstant.FREELANCER_REGISTRATION_SUCCESSFULLY;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-//import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.excel.freelance_finder.dto.ClientDto;
@@ -16,19 +21,14 @@ import com.excel.freelance_finder.listdto.JobPostingList;
 import com.excel.freelance_finder.responce.CommonResponce;
 import com.excel.freelance_finder.service.FreelanceFinderService;
 
-import static com.excel.freelance_finder.constant.FreelancerConstant.CLIENT_REGISTRATION_SUCCESSFULLY;
-import static com.excel.freelance_finder.constant.FreelancerConstant.FREELANCER_REGISTRATION_SUCCESSFULLY;
-import static com.excel.freelance_finder.constant.FreelancerConstant.CLIENT_LOGIN_SUCCESSFULLY;
-import static com.excel.freelance_finder.constant.FreelancerConstant.FREELANCER_LOGIN_SUCCESSFULLY;
-import static com.excel.freelance_finder.constant.FreelancerConstant.CLIENT_JOB_POSTING;
-import static com.excel.freelance_finder.constant.FreelancerConstant.FREELANCER_JOB_APPLICATION;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @CrossOrigin
+@RequiredArgsConstructor
 public class RegisterController {
 
-	@Autowired
-	private FreelanceFinderService finderService;
+	private final FreelanceFinderService finderService;
 
 	@PostMapping("/client")
 	public ResponseEntity<CommonResponce<String>> postClientInfo(@RequestBody ClientDto dto) {
@@ -68,7 +68,7 @@ public class RegisterController {
 
 	@PostMapping("/clientLogIn")
 	public ResponseEntity<CommonResponce<ClientDto>> clientLogIn(@RequestBody ClientDto dto) {
-		ClientDto signIn = finderService.loginSignIn(dto);
+		ClientDto signIn = finderService.clientLogin(dto);
 		return ResponseEntity.status(HttpStatus.OK).body(CommonResponce.<ClientDto>builder().data(signIn).isError(false)
 				.message(CLIENT_LOGIN_SUCCESSFULLY).build());
 	}
