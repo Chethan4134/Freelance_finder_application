@@ -10,7 +10,7 @@ function JobPostingPage() {
 
   const [formData, setFormData] = useState({
     email: clientEmail,
-    titel: "",
+    title: "",
     description: "",
     skill: "",
     budget: "",
@@ -32,8 +32,8 @@ function JobPostingPage() {
     if (!formData.jobId) {
       newErrors.jobId = "JobId is required";
     }
-    if (!formData.titel) {
-      newErrors.titel = "Title is required";
+    if (!formData.title) {
+      newErrors.title = "Title is required";
     }
     if (!formData.description) {
       newErrors.description = "Description is required";
@@ -60,7 +60,7 @@ function JobPostingPage() {
           jobPosting: [
             {
               jobId: formData.jobId,
-              titel: formData.titel,
+              title: formData.title,
               description: formData.description,
               skillsRequired: formData.skill,
               budget: formData.budget,
@@ -119,13 +119,13 @@ function JobPostingPage() {
                 <Form.Label>Title</Form.Label>
                 <Form.Control
                   type="text"
-                  name="titel"
+                  name="title"
                   placeholder="Enter your title "
-                  value={formData.titel}
+                  value={formData.title}
                   onChange={handleChange}
                 />
-                {errors.titel && (
-                  <span className="text-danger">{errors.titel}</span>
+                {errors.title && (
+                  <span className="text-danger">{errors.title}</span>
                 )}
               </Form.Group>
               <Form.Group className="mb-3" controlId="formGroupPassword">

@@ -8,7 +8,7 @@ import axios from "axios";
 function JobApplication() {
   const freelancerEmail = window.sessionStorage.getItem("freelancerEmail");
   const [formData, setFormData] = useState({
-    freelancerEmail: freelancerEmail,
+    freelancerEmail: freelancerEmail || "",
     jobId: "",
     skills: [],
     skillExperience: "",
@@ -28,7 +28,7 @@ function JobApplication() {
       } else {
         updatedSkills = updatedSkills.filter((skill) => skill !== value);
       }
-      setFormData({ ...formData, [name]: updatedSkills });
+      setFormData({ ...formData, skills: updatedSkills });
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -77,139 +77,136 @@ function JobApplication() {
       >
         <Container className="border bg-white col-sm-5 col-lg-5 rounded p-4 shadow">
           <p className="fw-bold fs-4 text-center">Job Application Portal</p>
-          <Row>
-            <Col>
-              <Form onSubmit={handleSubmit}>
-                <Form.Group className="mb-3" controlId="formGroupEmail">
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control
-                    type="email"
-                    name="freelancerEmail"
-                    placeholder="xyz@gmail.com"
-                    value={formData.freelancerEmail}
-                    required
-                    onChange={handleChange}
-                  />
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="formGroupPassword">
-                  <Form.Label>JobId</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="jobId"
-                    placeholder="Enter jobId "
-                    value={formData.jobId}
-                    required
-                    onChange={handleChange}
-                  />
-                </Form.Group>
-                <Form.Label>Skills</Form.Label>
-                <FormGroup>
-                  <Row sm={12}>
-                    <Col sm={3}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            name="skills"
-                            value="Java"
-                            checked={formData.skills.includes("Java")}
-                            onChange={handleChange}
-                          />
-                        }
-                        label="Java"
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3" controlId="formGroupEmail">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                name="freelancerEmail"
+                placeholder="xyz@gmail.com"
+                value={formData.freelancerEmail}
+                required
+                onChange={handleChange}
+                disabled // Assuming this is retrieved from session storage and should not be changed
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formGroupJobId">
+              <Form.Label>Job ID</Form.Label>
+              <Form.Control
+                type="text"
+                name="jobId"
+                placeholder="Enter jobId"
+                value={formData.jobId}
+                required
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Label>Skills</Form.Label>
+            <FormGroup>
+              <Row sm={12}>
+                <Col sm={3}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        name="skills"
+                        value="Java"
+                        checked={formData.skills.includes("Java")}
+                        onChange={handleChange}
                       />
-                    </Col>
-                    <Col sm={3}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            name="skills"
-                            value="Python"
-                            checked={formData.skills.includes("Python")}
-                            onChange={handleChange}
-                          />
-                        }
-                        label="Python"
+                    }
+                    label="Java"
+                  />
+                </Col>
+                <Col sm={3}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        name="skills"
+                        value="Python"
+                        checked={formData.skills.includes("Python")}
+                        onChange={handleChange}
                       />
-                    </Col>
-                    <Col sm={3}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            name="skills"
-                            value="React"
-                            checked={formData.skills.includes("React")}
-                            onChange={handleChange}
-                          />
-                        }
-                        label="React"
+                    }
+                    label="Python"
+                  />
+                </Col>
+                <Col sm={3}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        name="skills"
+                        value="React"
+                        checked={formData.skills.includes("React")}
+                        onChange={handleChange}
                       />
-                    </Col>
-                    <Col sm={3}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            name="skills"
-                            value=".Net"
-                            checked={formData.skills.includes(".Net")}
-                            onChange={handleChange}
-                          />
-                        }
-                        label=".Net"
+                    }
+                    label="React"
+                  />
+                </Col>
+                <Col sm={3}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        name="skills"
+                        value=".Net"
+                        checked={formData.skills.includes(".Net")}
+                        onChange={handleChange}
                       />
-                    </Col>
-                  </Row>
-                </FormGroup>
-                <Form.Group className="mb-3 mt-2" controlId="formGroupPassword">
-                  <Form.Label>Enter Your Skill Experience</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="skillExperience"
-                    placeholder="Enter your experience "
-                    value={formData.skillExperience}
-                    required
-                    onChange={handleChange}
+                    }
+                    label=".Net"
                   />
-                </Form.Group>
-                <Form.Group className="mb-6" controlId="formGroupEmail">
-                  <Form.Label>Skill Rating</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="skillRating"
-                    placeholder="Your Rating"
-                    value={formData.skillRating}
-                    required
-                    onChange={handleChange}
-                  />
-                </Form.Group>
-                <Form.Group className="mb-6" controlId="formGroupPassword">
-                  <Form.Label>Applied At</Form.Label>
-                  <Form.Control
-                    type="date"
-                    name="appliedAt"
-                    value={formData.appliedAt}
-                    required
-                    onChange={handleChange}
-                  />
-                </Form.Group>
-                <Form.Group className="mb-6" controlId="formGroupEmail">
-                  <Form.Label>Description</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="skillDescription"
-                    placeholder="Write description"
-                    value={formData.skillDescription}
-                    required
-                    onChange={handleChange}
-                  />
-                </Form.Group>
-              </Form>
-            </Col>
-          </Row>
-          <Container className="d-flex justify-content-center mt-4">
-            <Button className="col-5" variant="success" type="submit">
-              Submit
-            </Button>
-          </Container>
+                </Col>
+              </Row>
+            </FormGroup>
+            <Form.Group className="mb-3 mt-2" controlId="formGroupSkillExperience">
+              <Form.Label>Enter Your Skill Experience</Form.Label>
+              <Form.Control
+                type="text"
+                name="skillExperience"
+                placeholder="Enter your experience"
+                value={formData.skillExperience}
+                required
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formGroupSkillRating">
+              <Form.Label>Skill Rating</Form.Label>
+              <Form.Control
+                type="text"
+                name="skillRating"
+                placeholder="Your Rating"
+                value={formData.skillRating}
+                required
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formGroupAppliedAt">
+              <Form.Label>Applied At</Form.Label>
+              <Form.Control
+                type="date"
+                name="appliedAt"
+                value={formData.appliedAt}
+                required
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formGroupSkillDescription">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                type="text"
+                name="skillDescription"
+                placeholder="Write description"
+                value={formData.skillDescription}
+                required
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Container className="d-flex justify-content-center mt-4">
+              <Button className="col-5" variant="success" type="submit">
+                Submit
+              </Button>
+            </Container>
+          </Form>
         </Container>
       </div>
     </>

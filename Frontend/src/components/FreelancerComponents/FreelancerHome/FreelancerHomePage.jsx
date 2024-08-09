@@ -36,8 +36,8 @@ function FreelancerHomePage() {
 
   const filteredJobs = jobs.filter(
     (job) =>
-      (job.titel &&
-        job.titel.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (job.title &&
+        job.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (job.description &&
         job.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (job.jobId && job.jobId.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -131,7 +131,7 @@ function FreelancerHomePage() {
               >
                 <CardContent>
                   <Typography variant="h6" component="div" gutterBottom>
-                    {job.titel || "Untitled Job"}{" "}
+                    {job.title || "Untitled Job"}{" "}
                   </Typography>
                   <Typography variant="body1" component="div" gutterBottom>
                     {job.description}
